@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
+# my enumerable
 module Enumerable
   def my_each
-    finally = []
-
-    i = 0
-    while i < array.length
-      finally << yield(array[i])
-      i += 1
+    if block_given?
+      for i in self
+        yield(i)
+      end
+      self
+    else
+      to_enum(:my_each)
     end
-
-    return finally
   end
 end
-
-my_each([1,2,3,4]) do |x| x*2 end
-puts "#{x}"
+([1, 2, 3, 4, 5]).my_each { |n| p  "Current number is: #{n}" }
+(1..5).each { |n| p  "Current number is: #{n}" }
+p (1..5).each { |n| "Current number is: #{n}" }==  (1..5).my_each { |n|  "Current number is: #{n}" }
