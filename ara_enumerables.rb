@@ -49,4 +49,3 @@ end
 #puts (1..5).each_with_index { |n, i| "Number is: #{n}, Index is: #{i}" } ==  (1..5).my_each_with_index { |n, i|  "Number is: #{n}, Index is: #{i}" }
 
 print [1,2,3,4,5].my_select { |num|  num.even?  }
-print (1..10).my_select { |i|  i % 3 == 0 }
