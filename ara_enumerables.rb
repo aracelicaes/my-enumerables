@@ -37,12 +37,12 @@ module Enumerable
     arr
   end
 
-  def my_all?(arg = 99)
+  def my_all?(arg = nil)
     if block_given?
       false_count = 0
       my_each { |e| false_count += 1 unless yield e }
       !false_count.positive?
-    elsif arg == 99
+    elsif arg == nil
       my_all? { |e| e }
     else
       my_all? { |e| arg === e }
