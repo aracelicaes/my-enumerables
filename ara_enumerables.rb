@@ -2,9 +2,8 @@
 
 # my enumerable
 module Enumerable
-
   def my_each
-    return to_enum unless block_given?
+    return to_enum(:my_each) unless block_given?
     i = 0
     while i < size
       yield(to_a[i])
@@ -49,15 +48,24 @@ module Enumerable
     end
   end
 
+  def my_any?(arg = nil)
+    if block_given?
+      true_count = 0
+      my_each { |e| true_count += 1 if yield e }
+      true_count.positive?
+    
+    end
+  end
+
 end
 
-p %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
-p %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
-p %w[ant bear cat].my_all?(/t/) #=> false
-p [1, 2i, 3.14].my_all?(Numeric) #=> true
-p [nil, true, 99].my_all? #=> false
-p [].my_all? #=> true
-p [3,4,5].all? { |n| n.even? } == [3,4,5].my_all? { |n| n.even? } #=> true
+p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
+p %w[ant bear cat].my_any? { |word| word.length >= 5 } #=> false
+#p %w[ant bear cat].my_all?(/t/) #=> false
+#p [1, 2i, 3.14].my_all?(Numeric) #=> true
+#p [nil, true, 99].my_all? #=> false
+#p [].my_all? #=> true
+#p [3,4,5].all? { |n| n.even? } == [3,4,5].my_all? { |n| n.even? } #=> true
 
 =begin
 ([1, 2, 3, 4, 5]).my_each { |n| p  "Current number is: #{n}" }
