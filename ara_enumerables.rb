@@ -5,7 +5,6 @@ module Enumerable
 
   def my_each
     return to_enum unless block_given?
-    
     i = 0
     while i < size
       yield(to_a[i])
@@ -13,7 +12,7 @@ module Enumerable
     end
     self
   end
-  
+
   def my_each_with_index
     return to_enum unless block_given?
 
@@ -38,17 +37,27 @@ module Enumerable
     arr
   end
 
-  def my_all?(cond = nil)
-     final = true
+  def my_all?(arg = 99)
     if block_given?
-      my_each { |b| final = false unless yield(b) }
+      false_count = 0
+      my_each { |e| false_count += 1 unless yield e }
+      !false_count.positive?
+    elsif arg == 99
+      my_all? { |e| e }
     else
-      my_each { |b| final = false unless b }
+      my_all? { |e| arg === e }
     end
-     final
   end
 
 end
+
+p %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
+p %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
+p %w[ant bear cat].my_all?(/t/) #=> false
+p [1, 2i, 3.14].my_all?(Numeric) #=> true
+p [nil, true, 99].my_all? #=> false
+p [].my_all? #=> true
+p [3,4,5].all? { |n| n.even? } == [3,4,5].my_all? { |n| n.even? }
 
 =begin
 ([1, 2, 3, 4, 5]).my_each { |n| p  "Current number is: #{n}" }
@@ -67,10 +76,3 @@ p [1,2,3,4,5].my_select { |num|  num.even?  }
 p (1..10).my_select { |i|  i % 3 == 0 }
 p (1..5).select { |i| i % 3 == 0 } ==  (1..5).my_select { |i| i % 3 == 0 }
 =end
-
-p [-2,4,5,6,7,8,9].my_all? { |n| n > 1}
-
-
-p [3,4,5,6,7,8,9].my_all? { |n| n.even? }
-p %w(aa bb cc).all? { |n| n.size == 3 }
-p [3,4,5,6,7,8,9].all? { |n| n.even? } == [3,4,5,6,7,8,9].my_all? { |n| n.even? }
