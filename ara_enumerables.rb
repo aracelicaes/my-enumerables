@@ -53,7 +53,6 @@ module Enumerable
       true_count = 0
       my_each { |e| true_count += 1 if yield e }
       true_count.positive?
-    
     end
   end
 
