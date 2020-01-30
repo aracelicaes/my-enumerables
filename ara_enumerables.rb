@@ -60,7 +60,7 @@ module Enumerable
     end
   end
 
-  def my_none?(arg = nil)
+  def my_none?(arg = nil?)
     if block_given?
       true_count = 0
       my_each { |e| true_count += 1 if yield e }
