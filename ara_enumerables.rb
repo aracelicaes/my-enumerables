@@ -55,22 +55,26 @@ module Enumerable
       true_count.positive?
     elsif arg == nil?
       my_any? { |e| e }
+    else
+      my_any? { |e| arg === e }
     end
   end
 
 end
 
+=begin
 p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
 p %w[ant bear cat].my_any? { |word| word.length >= 4 } #=> true
-#p %w[ant bear cat].my_any?(/d/) #=> false
-#p [nil, true, 99].my_any?(Integer) #=> true
+p %w[ant bear cat].my_any?(/d/) #=> false
+p [nil, true, 99].my_any?(Integer) #=> true
 p [nil, true, 99].my_any? #=> true
 p [].my_any? #=> false
+=end
 
 #p %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
 #p %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
 #p %w[ant bear cat].my_all?(/t/) #=> false
-#p [3,4,5].all? { |n| n.even? } == [3,4,5].my_all? { |n| n.even? } #=> true
+#p [nil, true, 99].any?(Integer) == [nil, true, 99].my_any?(Integer) #=> true
 
 =begin
 ([1, 2, 3, 4, 5]).my_each { |n| p  "Current number is: #{n}" }
