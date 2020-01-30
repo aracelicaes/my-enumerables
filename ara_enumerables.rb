@@ -64,10 +64,7 @@ module Enumerable
     if block_given?
       true_count = 0
       my_each { |e| true_count += 1 if yield e }
-      #condition that checks if true count is true(0) / false (> 0)
-      #if true_count == 0 then true count = true else true_count = false
-      #unless true_count == 0 true_count = false
-      #true_count = false unless == 0
+      true_count.zero?
     elsif arg == nil?
       my_none? { |e| e }
     else
@@ -76,6 +73,8 @@ module Enumerable
   end
 
 end
+
+
 
 =begin
 p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
