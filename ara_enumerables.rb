@@ -41,7 +41,7 @@ module Enumerable
       false_count = 0
       my_each { |e| false_count += 1 unless yield e }
       !false_count.positive?
-    elsif arg == nil
+    elsif arg == nil?
       my_all? { |e| e }
     else
       my_all? { |e| arg === e }
@@ -57,6 +57,21 @@ module Enumerable
       my_any? { |e| e }
     else
       my_any? { |e| arg === e }
+    end
+  end
+
+  def my_none?(arg = nil)
+    if block_given?
+      true_count = 0
+      my_each { |e| true_count += 1 if yield e }
+      #condition that checks if true count is true(0) / false (> 0)
+      #if true_count == 0 then true count = true else true_count = false
+      #unless true_count == 0 true_count = false
+      #true_count = false unless == 0
+    elsif arg == nil?
+      my_none? { |e| e }
+    else
+      my_none? { |e| arg === e }
     end
   end
 
