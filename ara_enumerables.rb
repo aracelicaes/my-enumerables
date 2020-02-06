@@ -35,51 +35,61 @@ module Enumerable
   end
 
   def my_all?(arg = nil)
+    false_count = 0
     if block_given?
-      false_count = 0
       my_each { |e| false_count += 1 unless yield e }
-      !false_count.positive?
-    elsif arg.nil?
-      my_all? { |e| e }
     else
-      my_all? { |e| arg == e }
+      use_it = same_validator(arg)
+      my_each { |e| false_count += 1 unless use_it.call(e) }
     end
-  end
-
-  def my_any?(arg = nil)
-    if block_given?
-      true_count = 0
-      my_each { |e| true_count += 1 if yield e }
-      true_count.positive?
-    elsif arg.nil?
-      my_any? { |e| e }
-    else
-      my_any? { |e| arg == e }
-    end
+    !false_count.positive?
   end
 
   def my_none?(arg = nil)
+    true_count = 0
     if block_given?
-      true_count = 0
       my_each { |e| true_count += 1 if yield e }
-      true_count.zero?
-    elsif arg.nil?
-      my_none? { |e| e }
     else
-      my_eac h?{ |e| e.instance_of?(arg) }
+      use_it = same_validator(arg)
+      my_each { |e| true_count += 1 if use_it.call(e) }
+    end
+    true_count.zero?
+  end
+
+  def my_any?(arg = nil)
+    true_count = 0
+    if block_given?
+      my_each { |e| true_count += 1 if yield e }
+    else
+      use_it = same_validator(arg)
+      my_each { |e| true_count += 1 if use_it.call(e) }
+    end
+    true_count.positive?
+  end
+
+  def same_validator(arg)
+    if arg.nil?
+      proc { |e| e }
+    elsif arg.is_a? Regexp
+      proc { |e| e.to_s.match(arg) }
+    elsif arg.is_a? Class
+      proc { |e| e.class == arg }
+    else
+      proc { |e| e == arg }
     end
   end
+
 end
 
-p %w[ant bear cat].my_none? { |word| word.length == 5 } #=> true
-p %w[ant bear cat].my_none? { |word| word.length >= 4 } #=> false
-p %w[ant bear cat].my_none?(/d/) #=> true
-p [1, 3.14, 42].my_none?(Float) #=> false
-p [].my_none? == [].none? #=> true
-p [nil].my_none? #=> true
-p [nil, false].my_none? #=> true
-p [nil, false, true].my_none? #=> false
-p [nil, false, true].my_none? == [nil, false, true].none? #=> true
+# p %w[ant bear cat].my_none? { |word| word.length == 5 } #=> true
+# p %w[ant bear cat].my_none? { |word| word.length >= 4 } #=> false
+# p %w[ant bear cat].my_none?(/d/) #=> true
+# p [1, 3.14, 42].my_none?(Float) #=> false
+# p [].my_none? == [].none? #=> true
+# p [nil].my_none? #=> true
+# p [nil, false].my_none? #=> true
+# p [nil, false, true].my_none? #=> false
+# p [nil, false, true].my_none? == [nil, false, true].none? #=> true
 
 # p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
 # p %w[ant bear cat].my_any? { |word| word.length >= 4 } #=> true
@@ -88,10 +98,10 @@ p [nil, false, true].my_none? == [nil, false, true].none? #=> true
 # p [nil, true, 99].my_any? #=> true
 # p [].my_any? #=> false
 
-# p %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
-# p %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
-# p %w[ant bear cat].my_all?(/t/) #=> false
-# p [nil, true, 99].any?(Integer) == [nil, true, 99].my_any?(Integer) #=> true
+p %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
+p %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
+p %w[ant bear cat].my_all?(/t/) #=> false
+p [nil, true, 99].all?(Integer) == [nil, true, 99].my_all?(Integer) #=> true
 
 # ([1, 2, 3, 4, 5]).my_each { |n| p  "Current number is: #{n}" }
 # (1..5).each { |n| p  "Current number is: #{n}" }
