@@ -1,3 +1,9 @@
+# ary = [1, 2, 4, 2, 3]
+# p ary.my_count #=> 5
+# p ary.my_count(2) #=> 2
+# p ary.my_count{ |x| x%2==0 } #=> 3
+# p ary.my_count(2) == ary.count(2)
+
 # p %w[ant bear cat].my_none? { |word| word.length == 5 } #=> true
 # p %w[ant bear cat].my_none? { |word| word.length >= 4 } #=> false
 # p %w[ant bear cat].my_none?(/d/) #=> true

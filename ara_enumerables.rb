@@ -92,10 +92,48 @@ module Enumerable
     end
   end
 
+  def my_map(arg = nil)
+    if block_given?
+      arr = []
+      my_each { |e| arr.push(yield e) }
+      arr
+    else
+      to_enum(:my_map)
+    end
+  end
+
+  def my_inject(init = nil)
+    if init #si me dan un parametro vas a checar todo lo que sigue, si no...checa si es un bloque
+      if (init.is_a? Numeric) && block_given?
+        puts "Soy Numeric, ejecutar logic aqui"
+      elsif (init.is_a? Symbol) && !block_given?
+        puts "I'm a symbol, ejecutar logica aqui"
+        case init
+        when :+
+          puts "Soy suma"
+        when :-
+          puts "Soy Resta"
+        when :/
+          puts "Soy Division"
+        when :*
+          puts "Soy Multiplicacion"
+        else
+          puts "Soy un simbolo but....I'm not any of these symbols...no sirvo"
+        end
+      else
+        puts "We like highlighting mistakes here, !block !symbol(servible), !numeric, symbol+block(que no sirve)"
+      end
+    elsif block_given? #si me dieron el bloque SOLITO ejecuto aqui
+      puts "Me dieron un bloque pero no parametros por eso estamos aqui :D Ejecutando ando"
+    else
+      puts "No cumpli ninguna de las conidiciones de Arriba tons...regresamos un enumerable"
+    end
+    "Termine"
+  end
+
 end
 
-ary = [1, 2, 4, 2, 3]
-# p ary.my_count #=> 4
-# p ary.my_count(2) #=> 2
-# p ary.my_count{ |x| x%2==0 } #=> 3
-# p ary.my_count(2) == ary.count(2)
+# p (1..4).my_inject(:+){ |n| n + n }
+
+p (1..4).my_map(1) { |i| i*i }  #=> [1, 4, 9, 16]
+p (1..4).my_map { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
