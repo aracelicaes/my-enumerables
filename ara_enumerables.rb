@@ -28,7 +28,7 @@ module Enumerable
     if block_given?
       arr = []
       my_each do |i|
-        arr.push(i) if yield(i)
+        arr << i if yield(i)
       end
     end
     arr
@@ -95,45 +95,65 @@ module Enumerable
   def my_map(arg = nil)
     if block_given?
       arr = []
-      my_each { |e| arr.push(yield e) }
+      my_each { |e| arr << yield(e) }
       arr
     else
       to_enum(:my_map)
     end
   end
 
-  def my_inject(init = nil)
-    if init #si me dan un parametro vas a checar todo lo que sigue, si no...checa si es un bloque
-      if (init.is_a? Numeric) && block_given?
-        puts "Soy Numeric, ejecutar logic aqui"
-      elsif (init.is_a? Symbol) && !block_given?
-        puts "I'm a symbol, ejecutar logica aqui"
-        case init
-        when :+
-          puts "Soy suma"
-        when :-
-          puts "Soy Resta"
-        when :/
-          puts "Soy Division"
-        when :*
-          puts "Soy Multiplicacion"
-        else
-          puts "Soy un simbolo but....I'm not any of these symbols...no sirvo"
-        end
+  def my_inject(total = nil)
+    total ||= 0 #si total existe, usa su valor...si no existe...asignale 0
+    if (total.is_a? Numeric) && block_given?
+      # puts "Soy Numeric, ejecutar logic aqui"
+      my_each { |e| total = yield(total, e) }
+    elsif (total.is_a? Symbol) && !block_given?
+      puts "I'm a symbol, ejecutar logica aqui"
+      case total
+      when :+
+        sum = 0
+        my_each { |e| sum += e }
+        return sum
+      when :-
+        minus = 0
+        my_each { |e| minus -= e }
+        return minus
+      when :/
+        divide = 1
+        my_each { |e| divide = divide/e }
+        return divide
+      when :*
+        multip = 1
+        my_each { |e| multip *= e }
+        return multip
       else
-        puts "We like highlighting mistakes here, !block !symbol(servible), !numeric, symbol+block(que no sirve)"
+        puts "Soy un simbolo but....I'm not any of these symbols...no sirvo"
       end
-    elsif block_given? #si me dieron el bloque SOLITO ejecuto aqui
-      puts "Me dieron un bloque pero no parametros por eso estamos aqui :D Ejecutando ando"
     else
-      puts "No cumpli ninguna de las conidiciones de Arriba tons...regresamos un enumerable"
+      #puts "We like highlighting mistakes here, !block !symbol(servible), !numeric, symbol+block(que no sirve)"
+      return to_enum(:my_inject)
     end
-    "Termine"
+  #elsif block_given? #si me dieron el bloque SOLITO ejecuto aqui
+    #my_each { |e| total = yield(total, e) }
+  total
+  #"Termine"
   end
 
 end
 
-# p (1..4).my_inject(:+){ |n| n + n }
+# p (1..4).my_inject(:Home){ |n| n + n } # => ERROR symbol (inservible), block NO TOMA SYMBOL + BLOCK
 
-p (1..4).my_map(1) { |i| i*i }  #=> [1, 4, 9, 16]
-p (1..4).my_map { "cat"  }   #=> ["cat", "cat", "cat", "cat"]
+# p (1..4).my_inject(:+) # => 10 symbol, !block
+# p (5..10).reduce(1, :*) # => 151200
+
+# p (1..4).my_inject(1){ |total, n| total + n } # => 11 arg, bloque
+# p [10, 30, 20, 60].my_inject(5){ |total, n| total + n } # => 125 arg, bloque
+
+# p (5..10).my_inject{ |sum, n| sum + n } # => 45 !arg, Bloque
+# p (5..10).my_inject(1) return to enum
+# p (5..10).inject(:*)
+p [100, 2].other_inject(:/)
+
+# multip = 1
+# [1, 2, 3, 4, 5].my_each { |e| puts multip *= e }
+# puts multip
