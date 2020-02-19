@@ -1,4 +1,5 @@
 # my enumerable
+require './utils.rb'
 module Enumerable
   def my_each
     return to_enum(:my_each) unless block_given?
@@ -92,7 +93,7 @@ module Enumerable
     end
   end
 
-  def my_map(arg = nil)
+  def my_map
     if block_given?
       arr = []
       my_each { |e| arr << yield(e) }
@@ -102,58 +103,27 @@ module Enumerable
     end
   end
 
-  def my_inject(total = nil)
-    total ||= 0 #si total existe, usa su valor...si no existe...asignale 0
-    if (total.is_a? Numeric) && block_given?
-      # puts "Soy Numeric, ejecutar logic aqui"
+  def my_inject(total = nil, sym = nil)
+    if block_given? && total.nil?
+      initial = to_a[0]
+      my_each_with_index do |e, i|
+        next if i.zero?
+
+        initial = yield(initial, e)
+        total = initial
+      end
+    elsif (total.is_a? Numeric) && block_given?
       my_each { |e| total = yield(total, e) }
     elsif (total.is_a? Symbol) && !block_given?
-      puts "I'm a symbol, ejecutar logica aqui"
-      case total
-      when :+
-        sum = 0
-        my_each { |e| sum += e }
-        return sum
-      when :-
-        minus = 0
-        my_each { |e| minus -= e }
-        return minus
-      when :/
-        divide = 1
-        my_each { |e| divide = divide/e }
-        return divide
-      when :*
-        multip = 1
-        my_each { |e| multip *= e }
-        return multip
-      else
-        puts "Soy un simbolo but....I'm not any of these symbols...no sirvo"
-      end
-    else
-      #puts "We like highlighting mistakes here, !block !symbol(servible), !numeric, symbol+block(que no sirve)"
-      return to_enum(:my_inject)
+      return operator_eval(total)
+    elsif (total.is_a? Numeric) && (sym.is_a? Symbol) && !block_given?
+      return operator_eval(total, sym)
     end
-  #elsif block_given? #si me dieron el bloque SOLITO ejecuto aqui
-    #my_each { |e| total = yield(total, e) }
-  total
-  #"Termine"
+    total
   end
-
 end
 
-# p (1..4).my_inject(:Home){ |n| n + n } # => ERROR symbol (inservible), block NO TOMA SYMBOL + BLOCK
-
-# p (1..4).my_inject(:+) # => 10 symbol, !block
-# p (5..10).reduce(1, :*) # => 151200
-
-# p (1..4).my_inject(1){ |total, n| total + n } # => 11 arg, bloque
-# p [10, 30, 20, 60].my_inject(5){ |total, n| total + n } # => 125 arg, bloque
-
-# p (5..10).my_inject{ |sum, n| sum + n } # => 45 !arg, Bloque
-# p (5..10).my_inject(1) return to enum
-# p (5..10).inject(:*)
-p [100, 2].other_inject(:/)
-
-# multip = 1
-# [1, 2, 3, 4, 5].my_each { |e| puts multip *= e }
-# puts multip
+def multiply_els(arr)
+  arr.my_inject(1) { |multip, e| multip * e }
+end
+require './testcases.rb'
