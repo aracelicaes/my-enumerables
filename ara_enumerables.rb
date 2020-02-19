@@ -126,4 +126,4 @@ end
 def multiply_els(arr)
   arr.my_inject(1) { |multip, e| multip * e }
 end
-require './testcases.rb'
+# require './testcases.rb'
