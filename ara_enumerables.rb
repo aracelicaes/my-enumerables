@@ -13,7 +13,7 @@ module Enumerable
   end
 
   def my_each_with_index
-    return to_enum unless block_given?
+    return to_enum(:my_each_with_index) unless block_given?
 
     i = 0
     while i < size
@@ -24,7 +24,7 @@ module Enumerable
   end
 
   def my_select
-    return to_enum unless block_given?
+    return to_enum(:my_select) unless block_given?
 
     if block_given?
       arr = []
@@ -70,12 +70,16 @@ module Enumerable
 
   def same_validator(arg)
     if arg.nil?
+      # p "We're here cause the arg is NIL"
       proc { |e| e }
     elsif arg.is_a? Regexp
+      # p "We're here cause it's a REGEXP"
       proc { |e| e.to_s.match(arg) }
-    elsif arg.is_a? Class
-      proc { |e| e.class == arg }
+    elsif arg.instance_of? Class
+      # p "We're here cause it's a class"
+      proc { |e| e.is_a? arg }
     else
+      # p "We're here cause we're eval pattern"
       proc { |e| e == arg }
     end
   end
