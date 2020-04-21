@@ -131,3 +131,9 @@ def multiply_els(arr)
   arr.my_inject(1) { |multip, e| multip * e }
 end
 # require './testcases.rb'
+
+p [1,2,3,4,5,56,7,8,9,234].inject(:+)
+#=> 329
+p [1,2,3,4,5,56,7,8,9,234].my_inject(:+)
+#=> 330
+p (5..10).my_inject(1, :+) # => 46 WORKS
